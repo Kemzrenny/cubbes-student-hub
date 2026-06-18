@@ -1,0 +1,15 @@
+# Render Blueprint — persistent Python web service for the API/backend.
+# The slow PostHog aggregations need a long-lived server (not serverless),
+# which is why the backend lives here rather than on Vercel.
+services:
+  - type: web
+    name: cubbes-student-hub
+    runtime: python
+    plan: free            # free tier sleeps when idle (first request after idle is slow)
+    buildCommand: pip install -r requirements.txt
+    startCommand: python serve.py
+    envVars:
+      - key: POSTHOG_API_KEY
+        sync: false        # set this secret in the Render dashboard — never commit it
+      - key: POSTHOG_PROJECT_ID
+        value: "238227"

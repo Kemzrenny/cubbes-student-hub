@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cubbes Wrapped</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #1A56DB;
+    --navy: #0B2564;
+    --navy-deep: #081B4D;
+    --yellow: #F5C443;
+    --ink: #0A0A0A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: #05060B;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #fff;
+    overflow: hidden;
+  }
+  .wrap {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .stage {
+    position: relative;
+    width: min(440px, 100vw);
+    height: min(860px, 100vh);
+    border-radius: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 72px 36px 96px;
+    transition: background 0.5s ease;
+  }
+  @media (min-width: 480px) {
+    .stage { border-radius: 28px; box-shadow: 0 40px 120px -40px rgba(0,0,0,0.8); }
+  }
+
+  /* gradient themes */
+  .bg-0 { background: radial-gradient(120% 120% at 20% 10%, #2B6BFF 0%, #0B2564 55%, #081B4D 100%); }
+  .bg-1 { background: radial-gradient(120% 120% at 80% 15%, #F5C443 0%, #E8870F 45%, #7A2E00 100%); color: #2A1E00; }
+  .bg-2 { background: radial-gradient(120% 120% at 15% 85%, #38BDF8 0%, #1A56DB 50%, #0B2564 100%); }
+  .bg-3 { background: radial-gradient(120% 120% at 75% 20%, #FB7185 0%, #BE123C 55%, #4C0519 100%); }
+  .bg-4 { background: radial-gradient(120% 120% at 25% 20%, #34D399 0%, #059669 50%, #064E3B 100%); }
+  .bg-5 { background: radial-gradient(120% 120% at 80% 80%, #C084FC 0%, #7C3AED 50%, #3B0764 100%); }
+  .bg-6 { background: radial-gradient(120% 120% at 50% 10%, #F5C443 0%, #1A56DB 60%, #0B2564 100%); }
+  .bg-7 { background: radial-gradient(120% 120% at 50% 100%, #1A56DB 0%, #0B2564 55%, #05060B 100%); }
+
+  /* progress bars */
+  .progress {
+    position: absolute;
+    top: 14px; left: 14px; right: 14px;
+    display: flex; gap: 5px;
+    z-index: 5;
+  }
+  .progress .seg {
+    flex: 1; height: 3px; border-radius: 3px;
+    background: rgba(255,255,255,0.28);
+    overflow: hidden;
+  }
+  .progress .seg.dark { background: rgba(0,0,0,0.22); }
+  .progress .seg > i {
+    display: block; height: 100%; width: 0%;
+    background: #fff; border-radius: 3px;
+  }
+  .progress .seg.dark > i { background: rgba(0,0,0,0.85); }
+  .progress .seg.done > i { width: 100%; }
+  .progress .seg.current > i { width: 100%; }
+
+  .card-inner { animation: rise 0.5s cubic-bezier(.2,.7,.2,1); }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+  .eyebrow {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; opacity: 0.85; margin-bottom: 18px;
+  }
+  .big {
+    font-size: clamp(56px, 18vw, 92px);
+    font-weight: 900; letter-spacing: -0.04em; line-height: 0.95;
+    font-variant-numeric: tabular-nums;
+  }
+  .big .unit { font-size: 0.32em; font-weight: 800; letter-spacing: -0.01em; opacity: 0.85; }
+  .headline {
+    font-size: clamp(28px, 8vw, 40px);
+    font-weight: 800; letter-spacing: -0.03em; line-height: 1.08;
+  }
+  .lede {
+    font-size: 17px; line-height: 1.5; font-weight: 500;
+    opacity: 0.9; margin-top: 16px; max-width: 320px;
+  }
+  .sub { font-size: 15px; opacity: 0.8; margin-top: 14px; font-weight: 500; }
+  .emoji-xl { font-size: 64px; line-height: 1; margin-bottom: 18px; }
+
+  .stat-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-top: 26px;
+  }
+  .stat {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px; padding: 14px 16px;
+    backdrop-filter: blur(4px);
+  }
+  .bg-1 .stat { background: rgba(0,0,0,0.10); border-color: rgba(0,0,0,0.14); }
+  .stat .s-val { font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .stat .s-lab { font-size: 12px; opacity: 0.82; font-weight: 600; margin-top: 4px; }
+
+  .brandmark {
+    position: absolute; bottom: 22px; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.08em; opacity: 0.78; z-index: 5;
+  }
+  .bm-logo { height: 15px; width: auto; display: block; filter: brightness(0) invert(1); }
+  .bg-1 .bm-logo { filter: brightness(0); }
+
+  .intro-logo {
+    height: 30px; width: auto; display: block; margin-bottom: 22px;
+    filter: brightness(0) invert(1);
+  }
+  .bg-1 .intro-logo { filter: brightness(0); }
+
+  .tap-hint { position: absolute; bottom: 54px; left: 0; right: 0; text-align: center; font-size: 13px; opacity: 0.7; z-index: 5; }
+
+  /* nav zones */
+  .zone { position: absolute; top: 0; bottom: 0; width: 38%; z-index: 4; cursor: pointer; }
+  .zone-left { left: 0; }
+  .zone-right { right: 0; width: 62%; }
+
+  .nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 0; background: rgba(255,255,255,0.18); color: #fff;
+    font-size: 22px; cursor: pointer; z-index: 6; display: grid; place-items: center;
+  }
+  .nav:hover { background: rgba(255,255,255,0.3); }
+  .nav-prev { left: -52px; }
+  .nav-next { right: -52px; }
+  @media (max-width: 560px) { .nav { display: none; } }
+
+  .share-btn {
+    margin-top: 26px; display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; color: var(--navy); border: 0;
+    padding: 13px 22px; border-radius: 999px; font: inherit;
+    font-size: 15px; font-weight: 700; cursor: pointer; z-index: 6; position: relative;
+  }
+  .share-btn:hover { opacity: 0.9; }
+
+  .state { text-align: center; opacity: 0.85; font-size: 16px; }
+  a.back {
+    position: absolute; top: 16px; right: 16px; z-index: 6;
+    color: #fff; opacity: 0.7; font-size: 13px; text-decoration: none; font-weight: 600;
+  }
+  a.back:hover { opacity: 1; }
+</style>
+<script>
+  /* PRODUCTION: set to your Render backend URL, e.g. "https://your-app.onrender.com".
+     Leave "" for local dev (serve.py serves the API on the same origin). */
+  window.API_BASE = "";
+</script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="stage bg-0" id="stage">
+      <div class="state" id="state">Loading your Wrapped…</div>
+    </div>
+    <button class="nav nav-prev" id="prev" aria-label="Previous">‹</button>
+    <button class="nav nav-next" id="next" aria-label="Next">›</button>
+  </div>
+
+<script>
+  const API_BASE = window.API_BASE || '';
+  const qs = new URLSearchParams(location.search);
+  const email = qs.get('email') || '';
+  const dateFrom = qs.get('date_from') || '2026-01-01';
+  const dateTo = qs.get('date_to') || '';
+
+  const stage = document.getElementById('stage');
+  let cards = [];
+  let idx = 0;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+  function num(n) { return Number(n || 0).toLocaleString(); }
+  function fmtDate(d) {
+    if (!d) return null;
+    const dt = new Date(d.length <= 10 ? d + 'T00:00:00' : d);
+    return isNaN(dt) ? d : dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  function periodText() {
+    const f = fmtDate(dateFrom);
+    return dateTo ? `${f} – ${fmtDate(dateTo)}` : `${f} – now`;
+  }
+
+  function personality(d) {
+    const sm = Number(d.study_minutes || 0);
+    const opts = [
+      { cond: (d.streak || 0) >= 7,        w: (d.streak||0)*5,           emoji: '🔥', name: 'The Streak Keeper', desc: 'Showing up day after day — consistency is your superpower.' },
+      { cond: (d.ai_sessions || 0) >= 10,  w: (d.ai_sessions||0)*2,      emoji: '🤖', name: 'The AI Power-User', desc: 'You and the AI tutor make a serious team.' },
+      { cond: (d.past_questions || 0) >= 20, w: (d.past_questions||0),   emoji: '📝', name: 'The Practice Machine', desc: 'Reps, reps, reps — past questions are your playground.' },
+      { cond: sm >= 300,                   w: sm,                         emoji: '📚', name: 'The Marathoner', desc: 'Long, focused study sessions are your signature move.' },
+      { cond: (d.materials_unique || 0) >= 8, w: (d.materials_unique||0)*5, emoji: '🧭', name: 'The Explorer', desc: 'You range far and wide across the material.' },
+      { cond: (d.topics || 0) >= 10,       w: (d.topics||0)*3,           emoji: '🎯', name: 'The Closer', desc: 'You finish what you start — topics checked off.' },
+    ].filter(o => o.cond);
+    if (!opts.length) return { emoji: '🌱', name: 'The Rising Scholar', desc: 'You\'re just getting going — the momentum is building.' };
+    opts.sort((a, b) => b.w - a.w);
+    return opts[0];
+  }
+
+  function buildCards(d) {
+    const name = (d.profile && d.profile.name) || (email.split('@')[0]);
+    const firstName = name ? name.split(' ')[0] : 'there';
+    const mins = Math.round(Number(d.study_minutes || 0));
+    const hrs = (Number(d.study_minutes || 0) / 60);
+    const topics = Math.max(0, Number(d.topics || 0));
+    const p = personality(d);
+    const list = [];
+
+    // 0 — intro
+    list.push({ bg: 'bg-0', html: `
+      <div class="card-inner">
+        <img class="intro-logo" src="https://cubbes.app/assets/logo.svg" alt="Cubbes" />
+        <div class="eyebrow">Wrapped</div>
+        <div class="headline">Hey ${esc(firstName)} 👋<br/>here's your study story.</div>
+        <div class="lede">${esc(periodText())}</div>
+        <div class="tap-hint">Tap right to begin →</div>
+      </div>` });
+
+    // 1 — study minutes
+    list.push({ bg: 'bg-1', html: `
+      <div class="card-inner">
+        <div class="eyebrow">You studied</div>
+        <div class="big">${num(mins)}<span class="unit"> minutes</span></div>
+        <div class="lede">That's about <strong>${hrs.toFixed(1)} hours</strong> of focus across <strong>${num(d.sessions)}</strong> study sessions.</div>
+      </div>` });
+
+    // 2 — active days
+    list.push({ bg: 'bg-2', html: `
+      <div class="card-inner">
+        <div class="eyebrow">Showing up</div>
+        <div class="big">${num(d.active_days)}<span class="unit"> days</span></div>
+        <div class="lede">You opened Cubbes and got to work on <strong>${num(d.active_days)}</strong> different days this period.</div>
+      </div>` });
+
+    // 3 — streak (only if any)
+    if ((d.streak || 0) > 0) {
+      list.push({ bg: 'bg-3', html: `
+        <div class="card-inner">
+          <div class="emoji-xl">🔥</div>
+          <div class="eyebrow">Longest streak</div>
+          <div class="big">${num(d.streak)}<span class="unit"> ${d.streak === 1 ? 'day' : 'days'}</span></div>
+          <div class="lede">Your best run of consecutive study days. Keep it alive!</div>
+        </div>` });
+    }
+
+    // 4 — features
+    list.push({ bg: 'bg-4', html: `
+      <div class="card-inner">
+        <div class="eyebrow">What you got done</div>
+        <div class="headline">A lot, actually.</div>
+        <div class="stat-grid">
+          <div class="stat"><div class="s-val">${num(topics)}</div><div class="s-lab">Topics completed</div></div>
+          <div class="stat"><div class="s-val">${num(d.past_questions)}</div><div class="s-lab">Past questions</div></div>
+          <div class="stat"><div class="s-val">${num(d.ai_sessions)}</div><div class="s-lab">AI tutor sessions</div></div>
+          <div class="stat"><div class="s-val">${num(d.materials_unique)}</div><div class="s-lab">Materials explored</div></div>
+        </div>
+      </div>` });
+
+    // 5 — rank (only if active + percentile known)
+    if (d.rank && d.rank.percentile_top != null) {
+      const r = d.rank;
+      list.push({ bg: 'bg-5', html: `
+        <div class="card-inner">
+          <div class="eyebrow">Among active studiers</div>
+          <div class="big">Top ${num(r.percentile_top)}%</div>
+          <div class="lede">You ranked <strong>#${num(r.position)}</strong> out of <strong>${num(r.total_active)}</strong> students who studied this period. 👏</div>
+        </div>` });
+    }
+
+    // 6 — personality
+    list.push({ bg: 'bg-6', html: `
+      <div class="card-inner">
+        <div class="emoji-xl">${p.emoji}</div>
+        <div class="eyebrow">Your study personality</div>
+        <div class="headline">${esc(p.name)}</div>
+        <div class="lede">${esc(p.desc)}</div>
+      </div>` });
+
+    // 7 — summary / share
+    list.push({ bg: 'bg-7', html: `
+      <div class="card-inner">
+        <div class="eyebrow">Your Wrapped, ${esc(periodText())}</div>
+        <div class="headline" style="margin-bottom:18px;">${esc(name || 'Scholar')}</div>
+        <div class="stat-grid">
+          <div class="stat"><div class="s-val">${num(mins)}</div><div class="s-lab">Minutes studied</div></div>
+          <div class="stat"><div class="s-val">${num(d.active_days)}</div><div class="s-lab">Active days</div></div>
+          <div class="stat"><div class="s-val">${num(d.streak)}</div><div class="s-lab">Best streak</div></div>
+          <div class="stat"><div class="s-val">${num(d.past_questions)}</div><div class="s-lab">Past questions</div></div>
+          <div class="stat"><div class="s-val">${num(d.ai_sessions)}</div><div class="s-lab">AI sessions</div></div>
+          <div class="stat"><div class="s-val">${(d.rank && d.rank.percentile_top != null) ? 'Top ' + num(d.rank.percentile_top) + '%' : '—'}</div><div class="s-lab">Studier rank</div></div>
+        </div>
+        <button class="share-btn" id="share">🔗 Copy link to share</button>
+      </div>` });
+
+    return list;
+  }
+
+  function renderProgress() {
+    const dark = cards[idx] && cards[idx].bg === 'bg-1';
+    const segs = cards.map((_, i) =>
+      `<div class="seg ${dark ? 'dark' : ''} ${i < idx ? 'done' : ''} ${i === idx ? 'current' : ''}"><i></i></div>`
+    ).join('');
+    return `<div class="progress">${segs}</div>`;
+  }
+
+  function render() {
+    const c = cards[idx];
+    stage.className = 'stage ' + c.bg;
+    stage.innerHTML =
+      renderProgress() +
+      `<a class="back" href="javascript:window.close()">Close ✕</a>` +
+      c.html +
+      `<div class="zone zone-left" id="zl"></div><div class="zone zone-right" id="zr"></div>` +
+      `<div class="brandmark"><img class="bm-logo" src="https://cubbes.app/assets/logo.svg" alt="Cubbes" /> <span>Wrapped</span></div>`;
+    document.getElementById('zl').onclick = () => go(-1);
+    document.getElementById('zr').onclick = () => go(1);
+    const share = document.getElementById('share');
+    if (share) share.onclick = doShare;
+    document.getElementById('prev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+    document.getElementById('next').style.visibility = idx === cards.length - 1 ? 'hidden' : 'visible';
+  }
+
+  function go(delta) {
+    const n = idx + delta;
+    if (n < 0 || n >= cards.length) return;
+    idx = n;
+    render();
+  }
+
+  function doShare() {
+    const url = location.href;
+    if (navigator.share) {
+      navigator.share({ title: 'My Cubbes Wrapped', url }).catch(() => {});
+      return;
+    }
+    navigator.clipboard?.writeText(url).then(() => {
+      const b = document.getElementById('share');
+      if (b) { b.textContent = '✓ Link copied!'; setTimeout(() => { b.textContent = '🔗 Copy link to share'; }, 1800); }
+    });
+  }
+
+  document.getElementById('prev').onclick = () => go(-1);
+  document.getElementById('next').onclick = () => go(1);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') go(1);
+    if (e.key === 'ArrowLeft') go(-1);
+  });
+
+  async function load() {
+    if (!email) {
+      document.getElementById('state').textContent = 'No student specified.';
+      return;
+    }
+    try {
+      let url = `${API_BASE}/api/wrapped?email=${encodeURIComponent(email)}&date_from=${encodeURIComponent(dateFrom)}`;
+      if (dateTo) url += `&date_to=${encodeURIComponent(dateTo)}`;
+      const res = await fetch(url, { cache: 'no-store' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || data.detail || `HTTP ${res.status}`);
+      cards = buildCards(data);
+      idx = 0;
+      render();
+    } catch (err) {
+      const s = document.getElementById('state');
+      if (s) s.textContent = "Couldn't load Wrapped: " + (err.message || err);
+    }
+  }
+
+  load();
+</script>
+</body>
+</html>

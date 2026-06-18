@@ -1,0 +1,5 @@
+# Backend-only files — Vercel hosts the static frontend; the API runs on Render.
+serve.py
+requirements.txt
+render.yaml
+README.md
